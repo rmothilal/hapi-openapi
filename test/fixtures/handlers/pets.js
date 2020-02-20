@@ -7,6 +7,7 @@ module.exports = {
         return Store.all();
     },
     post: function (req, h) {
-        return Store.get(Store.put(req.payload));
+        let result = Store.get(Store.put(req.payload));
+        return result.value;
     }
 };

@@ -3,7 +3,7 @@
 const Test = require('tape');
 const Path = require('path');
 const OpenAPI = require('../lib');
-const Hapi = require('hapi');
+const Hapi = require('@hapi/hapi');
 const StubAuthTokenScheme = require('./fixtures/lib/stub-auth-token-scheme');
 
 Test('authentication', function (t) {
@@ -16,7 +16,7 @@ Test('authentication', function (t) {
             }
 
             return {};
-        }
+        };
     };
 
     t.test('token authentication', async function (t) {
@@ -34,6 +34,8 @@ Test('authentication', function (t) {
             server.auth.strategy('api_key2', 'stub-auth-token', {
                 validateFunc: buildValidateFunc('98765')
             });
+
+            server.auth.default('api_key');
 
             await server.register({
                 plugin: OpenAPI,

@@ -3,7 +3,7 @@
 const Test = require('tape');
 const Path = require('path');
 const OpenAPI = require('../lib');
-const Hapi = require('hapi');
+const Hapi = require('@hapi/hapi');
 
 Test('test plugin', function (t) {
 
@@ -505,7 +505,17 @@ Test('test plugin', function (t) {
     t.test('routes with output validation', async function (t) {
         t.plan(5);
 
-        const server = new Hapi.Server();
+        const server = new Hapi.Server({
+            routes: {
+                validate: {
+                    failAction: async (request, h, err) => {
+                        if (err) {
+                            throw err
+                        }
+                    }
+                }
+            }
+        });
 
         try {
             await server.register({
@@ -515,6 +525,9 @@ Test('test plugin', function (t) {
                     handlers: Path.join(__dirname, './fixtures/handlers'),
                     outputvalidation: true
                 }
+            });
+            server.ext('onPreResponse',  (request, h) => {
+                return h.continue;
             });
 
             let response = await server.inject({
